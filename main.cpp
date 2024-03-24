@@ -4,6 +4,4 @@ int main()
 {
 	CryptoMain app{};
 	app.init();
-
-	return 0;
 }

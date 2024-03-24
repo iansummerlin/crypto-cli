@@ -4,6 +4,7 @@
 #include <string>
 #include "CryptoMain.h"
 #include "OrderBookEntry.h"
+#include "CSVReader.h"
 
 using namespace std;
 
@@ -23,12 +24,7 @@ void CryptoMain::init()
 
 void CryptoMain::loadOrderBook()
 {
-
-	OrderBookEntry order1{10000, 1.2, "2020/03/17 10:00:00.984492", "BTC/USDT", OrderBookType::bid};
-	OrderBookEntry order2{13022, 1.2, "2020/03/17 10:30:00.984492", "BTC/USDT", OrderBookType::ask};
-
-	orders.push_back(order1);
-	orders.push_back(order2);
+	orders = CSVReader::readCSV("order_book.csv");
 }
 
 void CryptoMain::printMenu()
@@ -77,6 +73,23 @@ void CryptoMain::printExchangeStats()
 {
 	cout << "Exchange stats: " << endl;
 	cout << "There are currently " << orders.size() << " orders in the system." << endl;
+
+	unsigned int bids = 0;
+	unsigned int asks = 0;
+
+	for (auto &order : orders)
+	{
+		if (order.getOrderType() == OrderBookType::bid)
+		{
+			bids++;
+		}
+		else
+		{
+			asks++;
+		}
+	}
+
+	cout << "There are " << bids << " bids and " << asks << " asks." << endl;
 }
 
 void CryptoMain::makeOffer()
@@ -126,7 +139,7 @@ void CryptoMain::processInput(int &input)
 	if (it != menu.end())
 	{
 		// Call the member function
-		(this->*it->second)();
+		(this->*(it->second))();
 	}
 	else
 	{
