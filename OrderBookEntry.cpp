@@ -14,27 +14,27 @@ OrderBookEntry::OrderBookEntry(
       product(product),
       orderType(orderType) {}
 
-double OrderBookEntry::getPrice()
+double OrderBookEntry::getPrice() const
 {
     return price;
 }
 
-double OrderBookEntry::getAmount()
+double OrderBookEntry::getAmount() const
 {
     return amount;
 }
 
-string OrderBookEntry::getTimestamp()
+string OrderBookEntry::getTimestamp() const
 {
     return timestamp;
 }
 
-string OrderBookEntry::getProduct()
+string OrderBookEntry::getProduct() const
 {
     return product;
 }
 
-OrderBookType OrderBookEntry::getOrderType()
+OrderBookType OrderBookEntry::getOrderType() const
 {
     return orderType;
 }

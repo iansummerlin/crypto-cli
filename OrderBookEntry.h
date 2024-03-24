@@ -21,11 +21,11 @@ public:
 		string timestamp,
 		string product,
 		OrderBookType orderType);
-	double getPrice();
-	double getAmount();
-	string getTimestamp();
-	string getProduct();
-	OrderBookType getOrderType();
+	double getPrice() const;
+	double getAmount() const;
+	string getTimestamp() const;
+	string getProduct() const;
+	OrderBookType getOrderType() const;
 	static OrderBookType stringToOrderBookType(string s);
 
 private:

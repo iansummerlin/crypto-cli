@@ -5,13 +5,14 @@
 #include "CryptoMain.h"
 #include "OrderBookEntry.h"
 #include "CSVReader.h"
+#include "Timestamp.h"
 
 using namespace std;
 
 void CryptoMain::init()
 {
 	running = true;
-	loadOrderBook();
+	currentTime = orderBook.getEarliestTime();
 	int input;
 
 	while (running == true)
@@ -20,11 +21,6 @@ void CryptoMain::init()
 		input = getInput();
 		processInput(input);
 	}
-}
-
-void CryptoMain::loadOrderBook()
-{
-	orders = CSVReader::readCSV("order_book.csv");
 }
 
 void CryptoMain::printMenu()
@@ -51,6 +47,7 @@ void CryptoMain::printMenu()
 	cout << "7: Exit" << endl;
 
 	cout << "================" << endl;
+	cout << "Current time is: " << currentTime << endl;
 	cout << "Type in 1-7" << endl;
 }
 
@@ -69,27 +66,57 @@ void CryptoMain::printHelp()
 	cout << "Choose options from the menu and follow the on screen instructions." << endl;
 }
 
+/**
+ * Print exchange stats
+ * This function will print the current stats for the exchange for the current timestamp
+ * and the stats for the last 24 hours.
+ * @returns void
+ */
 void CryptoMain::printExchangeStats()
 {
-	cout << "Exchange stats: " << endl;
-	cout << "There are currently " << orders.size() << " orders in the system." << endl;
-
-	unsigned int bids = 0;
-	unsigned int asks = 0;
-
-	for (auto &order : orders)
+	for (auto const &product : orderBook.getKnownProducts())
 	{
-		if (order.getOrderType() == OrderBookType::bid)
-		{
-			bids++;
-		}
-		else
-		{
-			asks++;
-		}
+		cout << "================" << endl;
+		cout << "Product: " << product << endl;
+		cout << "================" << endl;
+
+		// Current stats
+		vector<OrderBookEntry> orders = orderBook.getOrders(
+			OrderBookType::ask,
+			product,
+			currentTime);
+
+		cout << "Current timestamp stats: " << endl;
+		cout << "Asks for product: " << orders.size() << endl;
+		double maxPrice = OrderBook::getHighPrice(orders);
+		double minPrice = OrderBook::getLowPrice(orders);
+		cout << "Max ask: " << maxPrice << endl;
+		cout << "Min ask: " << minPrice << endl;
+		cout << "Spread: " << OrderBook::getPriceSpread(minPrice, maxPrice) << endl;
+
+		// 24 Hour stats
+		Timestamp ts(currentTime);
+		string startTime = ts.getMinTimestamp();
+		string endTime = ts.getMaxTimestamp();
+
+		cout << "24 hour stats: " << endl;
+		cout << "Between " << startTime << " and " << endTime << endl;
+
+		vector<OrderBookEntry> orders24 = orderBook.getOrdersForTimePeriod(
+			OrderBookType::ask,
+			product,
+			startTime,
+			endTime);
+
+		cout << "Asks for product: " << orders24.size() << endl;
+		double maxPrice24 = OrderBook::getHighPrice(orders24);
+		double minPrice24 = OrderBook::getLowPrice(orders24);
+		cout << "Max ask: " << maxPrice24 << endl;
+		cout << "Min ask: " << minPrice24 << endl;
+		cout << "Spread: " << OrderBook::getPriceSpread(minPrice24, maxPrice24) << endl;
 	}
 
-	cout << "There are " << bids << " bids and " << asks << " asks." << endl;
+	cout << "================" << endl;
 }
 
 void CryptoMain::makeOffer()
@@ -109,7 +136,8 @@ void CryptoMain::printWallet()
 
 void CryptoMain::handleContinue()
 {
-	cout << "Continue." << endl;
+	cout << "Going to next time frame..." << endl;
+	currentTime = orderBook.getNextTime(currentTime);
 }
 
 void CryptoMain::handleExit()
@@ -146,64 +174,3 @@ void CryptoMain::processInput(int &input)
 		handleInvalidInput();
 	}
 }
-
-// double CryptoMain::computeAveragePrice(vector<OrderBookEntry> &orders)
-// {
-// 	double sum = 0;
-// 	for (auto &order : orders)
-// 	{
-// 		sum += order.getPrice();
-// 	}
-
-// 	return sum / orders.size();
-// }
-
-// double CryptoMain::computeLowPrice(vector<OrderBookEntry> &orders)
-// {
-// 	double low = 0;
-// 	for (size_t i = 0; i < orders.size(); ++i)
-// 	{
-// 		if (i == 0)
-// 		{
-// 			low = orders[i].getPrice();
-// 		}
-// 		else
-// 		{
-// 			if (orders[i].getPrice() < low)
-// 			{
-// 				low = orders[i].getPrice();
-// 			}
-// 		}
-// 	}
-
-// 	return low;
-// }
-
-// double CryptoMain::computeHighPrice(vector<OrderBookEntry> &orders)
-// {
-// 	double high = 0;
-// 	for (size_t i = 0; i < orders.size(); ++i)
-// 	{
-// 		if (i == 0)
-// 		{
-// 			high = orders[i].getPrice();
-// 		}
-// 		else
-// 		{
-// 			if (orders[i].getPrice() > high)
-// 			{
-// 				high = orders[i].getPrice();
-// 			}
-// 		}
-// 	}
-
-// 	return high;
-// }
-
-// double CryptoMain::computePriceSpread(vector<OrderBookEntry> &orders)
-// {
-// 	double low = computeLowPrice(orders);
-// 	double high = computeHighPrice(orders);
-
-// 	return high - low;
-// }

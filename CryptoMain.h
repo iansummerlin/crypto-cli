@@ -1,4 +1,5 @@
 #include <vector>
+#include "OrderBook.h"
 #include "OrderBookEntry.h"
 
 class CryptoMain
@@ -9,9 +10,9 @@ public:
 
 private:
     bool running;
-    vector<OrderBookEntry> orders;
+    string currentTime;
+    OrderBook orderBook{"order_book.csv"};
 
-    void loadOrderBook();
     void printMenu();
     int getInput();
     void printHelp();
@@ -23,9 +24,4 @@ private:
     void handleExit();
     void handleInvalidInput();
     void processInput(int &input);
-
-    // double computeAveragePrice(vector<OrderBookEntry> &orders);
-    // double computeLowPrice(vector<OrderBookEntry> &orders);
-    // double computeHighPrice(vector<OrderBookEntry> &orders);
-    // double computePriceSpread(vector<OrderBookEntry> &orders);
 };
