@@ -1,4 +1,5 @@
 #include <vector>
+#include <string>
 #include "OrderBook.h"
 #include "OrderBookEntry.h"
 
@@ -17,8 +18,8 @@ private:
     int getInput();
     void printHelp();
     void printExchangeStats();
-    void makeOffer();
-    void makeBid();
+    void enterAsk();
+    void enterBid();
     void printWallet();
     void handleContinue();
     void handleExit();

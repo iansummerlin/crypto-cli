@@ -35,7 +35,7 @@ vector<OrderBookEntry> CSVReader::readCSV(string csvFilename)
     }
     else
     {
-        cout << "Error: Could not open file " << csvFilename << endl;
+        cout << "CSVReader::readCSV error: Could not open file " << csvFilename << endl;
         throw exception();
     }
 
@@ -72,7 +72,7 @@ OrderBookEntry CSVReader::stringsToOBE(vector<string> tokens)
 {
     if (tokens.size() != 5)
     {
-        cout << "Error: Expected 5 tokens per line - found " << tokens.size() << endl;
+        cout << "CSVReader::stringsToOBE error: Expected 5 tokens per line - found " << tokens.size() << endl;
         throw exception();
     }
 
@@ -84,7 +84,7 @@ OrderBookEntry CSVReader::stringsToOBE(vector<string> tokens)
     }
     catch (const exception &e)
     {
-        cout << "Error: Could not convert price or amount to double." << endl;
+        cout << "CSVReader::stringsToOBE error: Could not convert price or amount to double." << endl;
         cout << "Price: " << tokens[3] << endl;
         cout << "Amount: " << tokens[4] << endl;
         throw;
@@ -96,6 +96,37 @@ OrderBookEntry CSVReader::stringsToOBE(vector<string> tokens)
         tokens[0],
         tokens[1],
         OrderBookEntry::stringToOrderBookType(tokens[2])};
+
+    return order;
+}
+
+OrderBookEntry CSVReader::stringsToOBE(
+    string price,
+    string amount,
+    string timestamp,
+    string product,
+    OrderBookType orderType)
+{
+    double _price, _amount;
+    try
+    {
+        _price = stod(price);
+        _amount = stod(amount);
+    }
+    catch (const exception &e)
+    {
+        cout << "CSVReader::stringsToOBE error: Could not convert price or amount to double." << endl;
+        cout << "Price: " << price << endl;
+        cout << "Amount: " << amount << endl;
+        throw;
+    }
+
+    OrderBookEntry order{
+        _price,
+        _amount,
+        timestamp,
+        product,
+        orderType};
 
     return order;
 }

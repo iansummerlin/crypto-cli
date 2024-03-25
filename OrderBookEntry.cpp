@@ -52,3 +52,8 @@ OrderBookType OrderBookEntry::stringToOrderBookType(string s)
 
     return OrderBookType::unknown;
 }
+
+bool OrderBookEntry::compareByTimestamp(OrderBookEntry &a, OrderBookEntry &b)
+{
+    return a.getTimestamp() < b.getTimestamp();
+}

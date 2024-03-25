@@ -27,6 +27,7 @@ public:
 	string getProduct() const;
 	OrderBookType getOrderType() const;
 	static OrderBookType stringToOrderBookType(string s);
+	static bool compareByTimestamp(OrderBookEntry &a, OrderBookEntry &b);
 
 private:
 	double price;

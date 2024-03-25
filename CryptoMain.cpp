@@ -31,8 +31,8 @@ void CryptoMain::printMenu()
 	// 2 print exchange stats
 	cout << "2: Print exchange stats" << endl;
 
-	// 3 make an offer
-	cout << "3: Make an offer" << endl;
+	// 3 make an ask
+	cout << "3: Make an ask" << endl;
 
 	// 4 make a bid
 	cout << "4: Make a bid" << endl;
@@ -53,8 +53,20 @@ void CryptoMain::printMenu()
 
 int CryptoMain::getInput()
 {
+	string line;
+	getline(cin, line);
+
 	int input;
-	cin >> input;
+	try
+	{
+		input = stoi(line);
+	}
+	catch (const exception &e)
+	{
+		cout << "CryptoMain::getInput error: Could not convert input to int." << endl;
+		input = 0;
+	}
+
 	cout << "You chose: " << input << endl;
 
 	return input;
@@ -119,14 +131,68 @@ void CryptoMain::printExchangeStats()
 	cout << "================" << endl;
 }
 
-void CryptoMain::makeOffer()
+void CryptoMain::enterAsk()
 {
-	cout << "Make an offer." << endl;
+	cout << "Make an ask in the format: product,price,amount. E.g. ETH/BTC,200,0.5" << endl;
+	string input;
+	getline(cin, input);
+
+	cout << "You entered: " << input << endl;
+	vector<string> tokens = CSVReader::tokenise(input, ',');
+	if (tokens.size() != 3)
+	{
+		cout << "CryptoMain::enterAsk error: invalid input, please enter in the format: product,price,amount" << endl;
+	}
+	else
+	{
+		try
+		{
+			OrderBookEntry order = CSVReader::stringsToOBE(
+				tokens[1],
+				tokens[2],
+				currentTime,
+				tokens[0],
+				OrderBookType::ask);
+
+			orderBook.insertOrder(order);
+		}
+		catch (const exception &e)
+		{
+			cout << "CryptoMain::enterAsk error: Could not convert price or amount to double." << endl;
+		}
+	}
 }
 
-void CryptoMain::makeBid()
+void CryptoMain::enterBid()
 {
-	cout << "Make a bid." << endl;
+	cout << "Make a bid in the format: product,price,amount. E.g. ETH/BTC,200,0.5" << endl;
+	string input;
+	getline(cin, input);
+
+	cout << "You entered: " << input << endl;
+	vector<string> tokens = CSVReader::tokenise(input, ',');
+	if (tokens.size() != 3)
+	{
+		cout << "CryptoMain::enterBid error: invalid input, please enter in the format: product,price,amount" << endl;
+	}
+	else
+	{
+		try
+		{
+			OrderBookEntry order = CSVReader::stringsToOBE(
+				tokens[1],
+				tokens[2],
+				currentTime,
+				tokens[0],
+				OrderBookType::bid);
+
+			orderBook.insertOrder(order);
+		}
+		catch (const exception &e)
+		{
+			cout << "CryptoMain::enterBid error: Could not convert price or amount to double." << endl;
+		}
+	}
 }
 
 void CryptoMain::printWallet()
@@ -157,8 +223,8 @@ void CryptoMain::processInput(int &input)
 	map<int, void (CryptoMain::*)()> menu;
 	menu[1] = &CryptoMain::printHelp;
 	menu[2] = &CryptoMain::printExchangeStats;
-	menu[3] = &CryptoMain::makeOffer;
-	menu[4] = &CryptoMain::makeBid;
+	menu[3] = &CryptoMain::enterAsk;
+	menu[4] = &CryptoMain::enterBid;
 	menu[5] = &CryptoMain::printWallet;
 	menu[6] = &CryptoMain::handleContinue;
 	menu[7] = &CryptoMain::handleExit;
