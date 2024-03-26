@@ -6,8 +6,9 @@ using namespace std;
 
 enum class OrderBookType
 {
-	bid,
 	ask,
+	bid,
+	sale,
 	unknown
 };
 
@@ -23,11 +24,14 @@ public:
 		OrderBookType orderType);
 	double getPrice() const;
 	double getAmount() const;
+	void setAmount(double amount);
 	string getTimestamp() const;
 	string getProduct() const;
 	OrderBookType getOrderType() const;
 	static OrderBookType stringToOrderBookType(string s);
 	static bool compareByTimestamp(OrderBookEntry &a, OrderBookEntry &b);
+	static bool compareByPriceAsc(OrderBookEntry &a, OrderBookEntry &b);
+	static bool compareByPriceDesc(OrderBookEntry &a, OrderBookEntry &b);
 
 private:
 	double price;

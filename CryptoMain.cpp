@@ -203,6 +203,8 @@ void CryptoMain::printWallet()
 void CryptoMain::handleContinue()
 {
 	cout << "Going to next time frame..." << endl;
+	vector<OrderBookEntry> sales = orderBook.matchAsksToBids("ETH/BTC", currentTime);
+
 	currentTime = orderBook.getNextTime(currentTime);
 }
 

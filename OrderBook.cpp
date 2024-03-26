@@ -1,3 +1,4 @@
+#include <iostream>
 #include <map>
 #include <algorithm>
 #include "OrderBook.h"
@@ -28,7 +29,10 @@ vector<string> OrderBook::getKnownProducts()
     return products;
 }
 
-vector<OrderBookEntry> OrderBook::getOrders(OrderBookType type, string product, string timestamp)
+vector<OrderBookEntry> OrderBook::getOrders(
+    OrderBookType type,
+    string product,
+    string timestamp)
 {
     vector<OrderBookEntry> _orders;
     for (auto const &order : orders)
@@ -101,6 +105,70 @@ void OrderBook::insertOrder(OrderBookEntry &order)
 {
     orders.push_back(order);
     sort(orders.begin(), orders.end(), OrderBookEntry::compareByTimestamp);
+}
+
+vector<OrderBookEntry> OrderBook::matchAsksToBids(string product, string timestamp)
+{
+    cout << "Matching asks to bids for " << product << " at " << timestamp << endl;
+
+    vector<OrderBookEntry> asks = getOrders(OrderBookType::ask, product, timestamp);
+    vector<OrderBookEntry> bids = getOrders(OrderBookType::bid, product, timestamp);
+    vector<OrderBookEntry> sales;
+
+    cout << "Max ask: " << OrderBook::getHighPrice(asks) << endl;
+    cout << "Min ask: " << OrderBook::getLowPrice(asks) << endl;
+    cout << "Max bid: " << OrderBook::getHighPrice(bids) << endl;
+    cout << "Min bid: " << OrderBook::getLowPrice(bids) << endl;
+
+    sort(asks.begin(), asks.end(), OrderBookEntry::compareByPriceAsc);
+    sort(bids.begin(), bids.end(), OrderBookEntry::compareByPriceDesc);
+
+    for (auto &ask : asks)
+    {
+        for (auto &bid : bids)
+        {
+            if (bid.getPrice() >= ask.getPrice())
+            {
+                OrderBookEntry sale{
+                    ask.getPrice(),
+                    0,
+                    timestamp,
+                    product,
+                    OrderBookType::sale};
+
+                if (bid.getAmount() == ask.getAmount())
+                {
+                    sale.setAmount(ask.getAmount());
+                    sales.push_back(sale);
+                    bid.setAmount(0);
+                    break;
+                }
+                else if (bid.getAmount() > ask.getAmount())
+                {
+                    sale.setAmount(ask.getAmount());
+                    sales.push_back(sale);
+                    bid.setAmount(bid.getAmount() - ask.getAmount());
+                    break;
+                }
+                else if (bid.getAmount() < ask.getAmount())
+                {
+                    sale.setAmount(bid.getAmount());
+                    sales.push_back(sale);
+                    ask.setAmount(ask.getAmount() - bid.getAmount());
+                    bid.setAmount(0);
+                    continue;
+                }
+            }
+        }
+    }
+
+    cout << "Sales: " << sales.size() << endl;
+    for (auto &sale : sales)
+    {
+        cout << "Sale price: " << sale.getPrice() << " amount: " << sale.getAmount() << endl;
+    }
+
+    return sales;
 }
 
 double OrderBook::getHighPrice(vector<OrderBookEntry> &orders)

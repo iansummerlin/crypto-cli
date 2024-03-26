@@ -24,6 +24,11 @@ double OrderBookEntry::getAmount() const
     return amount;
 }
 
+void OrderBookEntry::setAmount(double amount)
+{
+    this->amount = amount;
+}
+
 string OrderBookEntry::getTimestamp() const
 {
     return timestamp;
@@ -56,4 +61,14 @@ OrderBookType OrderBookEntry::stringToOrderBookType(string s)
 bool OrderBookEntry::compareByTimestamp(OrderBookEntry &a, OrderBookEntry &b)
 {
     return a.getTimestamp() < b.getTimestamp();
+}
+
+bool OrderBookEntry::compareByPriceAsc(OrderBookEntry &a, OrderBookEntry &b)
+{
+    return a.getPrice() < b.getPrice();
+}
+
+bool OrderBookEntry::compareByPriceDesc(OrderBookEntry &a, OrderBookEntry &b)
+{
+    return a.getPrice() > b.getPrice();
 }

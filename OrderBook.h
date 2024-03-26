@@ -23,6 +23,7 @@ public:
 	string getEarliestTime();
 	string getNextTime(string timestamp);
 	void insertOrder(OrderBookEntry &order);
+	vector<OrderBookEntry> matchAsksToBids(string product, string timestamp);
 	static double getHighPrice(vector<OrderBookEntry> &orders);
 	static double getLowPrice(vector<OrderBookEntry> &orders);
 	static double getPriceSpread(vector<OrderBookEntry> &orders);
