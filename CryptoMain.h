@@ -2,6 +2,7 @@
 #include <string>
 #include "OrderBook.h"
 #include "OrderBookEntry.h"
+#include "Wallet.h"
 
 class CryptoMain
 {
@@ -12,8 +13,9 @@ public:
 private:
     bool running;
     string currentTime;
-    OrderBook orderBook{"order_book_test.csv"};
-    // OrderBook orderBook{"order_book.csv"};
+    // OrderBook orderBook{"order_book_test.csv"};
+    OrderBook orderBook{"order_book.csv"};
+    Wallet wallet;
 
     void printMenu();
     int getInput();

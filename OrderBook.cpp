@@ -134,8 +134,21 @@ vector<OrderBookEntry> OrderBook::matchAsksToBids(string product, string timesta
                     0,
                     timestamp,
                     product,
-                    OrderBookType::sale};
+                    OrderBookType::asksale};
 
+                // Handle usernames
+                if (bid.getUsername() == "user")
+                {
+                    sale.setUsername("user");
+                    sale.setOrderType(OrderBookType::bidsale);
+                }
+                else if (ask.getUsername() == "user")
+                {
+                    sale.setUsername("user");
+                    sale.setOrderType(OrderBookType::asksale);
+                }
+
+                // Match bids and asks
                 if (bid.getAmount() == ask.getAmount())
                 {
                     sale.setAmount(ask.getAmount());
@@ -143,14 +156,14 @@ vector<OrderBookEntry> OrderBook::matchAsksToBids(string product, string timesta
                     bid.setAmount(0);
                     break;
                 }
-                else if (bid.getAmount() > ask.getAmount())
+                if (bid.getAmount() > ask.getAmount())
                 {
                     sale.setAmount(ask.getAmount());
                     sales.push_back(sale);
                     bid.setAmount(bid.getAmount() - ask.getAmount());
                     break;
                 }
-                else if (bid.getAmount() < ask.getAmount())
+                if (bid.getAmount() < ask.getAmount() && bid.getAmount() > 0)
                 {
                     sale.setAmount(bid.getAmount());
                     sales.push_back(sale);
@@ -160,12 +173,6 @@ vector<OrderBookEntry> OrderBook::matchAsksToBids(string product, string timesta
                 }
             }
         }
-    }
-
-    cout << "Sales: " << sales.size() << endl;
-    for (auto &sale : sales)
-    {
-        cout << "Sale price: " << sale.getPrice() << " amount: " << sale.getAmount() << endl;
     }
 
     return sales;

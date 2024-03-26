@@ -8,7 +8,8 @@ enum class OrderBookType
 {
 	ask,
 	bid,
-	sale,
+	asksale,
+	bidsale,
 	unknown
 };
 
@@ -21,13 +22,17 @@ public:
 		double amount,
 		string timestamp,
 		string product,
-		OrderBookType orderType);
+		OrderBookType orderType,
+		string username = "dataset");
 	double getPrice() const;
 	double getAmount() const;
 	void setAmount(double amount);
 	string getTimestamp() const;
 	string getProduct() const;
 	OrderBookType getOrderType() const;
+	void setOrderType(OrderBookType orderType);
+	string getUsername() const;
+	void setUsername(string username);
 	static OrderBookType stringToOrderBookType(string s);
 	static bool compareByTimestamp(OrderBookEntry &a, OrderBookEntry &b);
 	static bool compareByPriceAsc(OrderBookEntry &a, OrderBookEntry &b);
@@ -39,4 +44,5 @@ private:
 	string timestamp;
 	string product;
 	OrderBookType orderType;
+	string username;
 };

@@ -7,12 +7,16 @@ OrderBookEntry::OrderBookEntry(
     double amount,
     string timestamp,
     string product,
-    OrderBookType orderType)
+    OrderBookType orderType,
+    string username)
     : price(price),
       amount(amount),
       timestamp(timestamp),
       product(product),
-      orderType(orderType) {}
+      orderType(orderType),
+      username(username)
+{
+}
 
 double OrderBookEntry::getPrice() const
 {
@@ -42,6 +46,21 @@ string OrderBookEntry::getProduct() const
 OrderBookType OrderBookEntry::getOrderType() const
 {
     return orderType;
+}
+
+void OrderBookEntry::setOrderType(OrderBookType orderType)
+{
+    this->orderType = orderType;
+}
+
+string OrderBookEntry::getUsername() const
+{
+    return username;
+}
+
+void OrderBookEntry::setUsername(string username)
+{
+    this->username = username;
 }
 
 OrderBookType OrderBookEntry::stringToOrderBookType(string s)

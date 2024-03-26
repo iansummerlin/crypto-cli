@@ -15,7 +15,7 @@ void CryptoMain::init()
 	currentTime = orderBook.getEarliestTime();
 	int input;
 
-	while (running == true)
+	while (running)
 	{
 		printMenu();
 		input = getInput();
@@ -153,8 +153,17 @@ void CryptoMain::enterAsk()
 				currentTime,
 				tokens[0],
 				OrderBookType::ask);
+			order.setUsername("user");
 
-			orderBook.insertOrder(order);
+			if (wallet.canFulfillOrder(order))
+			{
+				cout << "Fulfilling order..." << endl;
+				orderBook.insertOrder(order);
+			}
+			else
+			{
+				cout << "CryptoMain::enterAsk error: Not enough currency in wallet to fulfill order." << endl;
+			}
 		}
 		catch (const exception &e)
 		{
@@ -185,8 +194,17 @@ void CryptoMain::enterBid()
 				currentTime,
 				tokens[0],
 				OrderBookType::bid);
+			order.setUsername("user");
 
-			orderBook.insertOrder(order);
+			if (wallet.canFulfillOrder(order))
+			{
+				cout << "Fulfilling order..." << endl;
+				orderBook.insertOrder(order);
+			}
+			else
+			{
+				cout << "CryptoMain::enterBid error: Not enough currency in wallet to fulfill order." << endl;
+			}
 		}
 		catch (const exception &e)
 		{
@@ -198,12 +216,26 @@ void CryptoMain::enterBid()
 void CryptoMain::printWallet()
 {
 	cout << "Print wallet." << endl;
+	cout << wallet.toString() << endl;
 }
 
 void CryptoMain::handleContinue()
 {
 	cout << "Going to next time frame..." << endl;
-	vector<OrderBookEntry> sales = orderBook.matchAsksToBids("ETH/BTC", currentTime);
+	for (auto const &product : orderBook.getKnownProducts())
+	{
+		vector<OrderBookEntry> sales = orderBook.matchAsksToBids(product, currentTime);
+		cout << "Sales for " << product << ": " << sales.size() << endl;
+		for (auto &sale : sales)
+		{
+			cout << "Sale price: " << sale.getPrice() << " amount: " << sale.getAmount() << endl;
+
+			if (sale.getUsername() == "user")
+			{
+				wallet.processSale(sale);
+			}
+		}
+	}
 
 	currentTime = orderBook.getNextTime(currentTime);
 }
